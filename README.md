@@ -29,7 +29,10 @@ require'cmp'.setup {
 ## Configuration
 
 ```lua
-{} -- need to implement configuration
+require("bootstrap-cmp.config"):setup({
+    file_types = { ... },
+    url = "..."
+})
 
 ```
 
@@ -37,7 +40,7 @@ require'cmp'.setup {
 
 - [ ] cmp documentation should contain css code for selected class.
 - [ ] default config for filetypes and for max_count is needed.
-- [ ] user should have ability to chage config.
+- [x] user should have ability to chage config.
 - [ ] finish readme file.
 - [ ] detect style or src links in html file for bootstrap.
-- [ ] user should put he's version of bootstrap url.
+- [x] user should put he's version of bootstrap url.

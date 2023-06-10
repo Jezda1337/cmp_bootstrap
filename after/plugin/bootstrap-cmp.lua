@@ -1,1 +1,1 @@
-require("bootstrap_cmp"):setup()
+require("bootstrap-cmp"):setup()

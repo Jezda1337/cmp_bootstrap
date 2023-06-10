@@ -8,7 +8,7 @@ function M.getBootstrapCssFile(url)
 		return nil, {}
 	end
 
-	return response.body
+	return response.status, response.body
 end
 
 function M.isClassOrClassNameProperty()
@@ -20,19 +20,31 @@ function M.isClassOrClassNameProperty()
 		local className_start_pos, className_end_pos = line:find('className%s-=%s-".-"')
 
 		if
-			(class_start_pos and class_end_pos and cursor_pos[2] > class_start_pos and cursor_pos[2] <= class_end_pos)
-			or (
-				className_start_pos
-				and className_end_pos
-				and cursor_pos[2] > className_start_pos
-				and cursor_pos[2] <= className_end_pos
-			)
+				(class_start_pos and class_end_pos and cursor_pos[2] > class_start_pos and cursor_pos[2] <= class_end_pos)
+				or (
+					className_start_pos
+					and className_end_pos
+					and cursor_pos[2] > className_start_pos
+					and cursor_pos[2] <= className_end_pos
+				)
 		then
 			return true
 		else
 			return false
 		end
 	end
+end
+
+function M.extract_selectors(tbl)
+	local selectors_pattern = "%.[a-zA-Z_][%w-]*"
+	local selectors = {}
+
+	for class in tbl:gmatch(selectors_pattern) do
+		local class_name = string.sub(class, 2)
+		table.insert(selectors, class_name)
+	end
+
+	return selectors
 end
 
 function M.remove_duplicates(t)
