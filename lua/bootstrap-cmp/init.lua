@@ -32,14 +32,18 @@ function Source:complete(_, callback)
 			return
 		end
 
-		self.selectors = utils.extract_selectors(self.file)
+		self.rules = utils.extract_rules(self.file)
 
-		self.filtered_table = utils.remove_duplicates(self.selectors)
+		self.filtered_table = utils.remove_duplicates(self.rules)
 
-		for _, class in ipairs(self.filtered_table) do
+		for _, rule in ipairs(self.filtered_table) do
 			table.insert(self.items, {
-				label = class,
+				label = rule['class_name'],
 				kind = cmp.lsp.CompletionItemKind.Enum,
+        documentation = {
+          kind = 'markdown',
+          value = '```css\n' .. rule['css_properties'] .. '\n```'
+        }
 			})
 		end
 
