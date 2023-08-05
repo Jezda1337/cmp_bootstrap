@@ -1,6 +1,9 @@
 local M = {}
 local curl = require("plenary.curl")
 
+local VALID_PREFIXES = { 'class', 'className' }
+local VALID_QUOTES = { [["]], [[']]}
+
 function M.getBootstrapCssFile(url)
 	local response = curl.get(url)
 	if not response then
@@ -12,27 +15,22 @@ function M.getBootstrapCssFile(url)
 end
 
 function M.isClassOrClassNameProperty()
-	local line = vim.api.nvim_get_current_line()
+  local line = vim.api.nvim_get_current_line()
 
-	if line:match('class%s-=%s-".-"') or line:match('className%s-=%s-".-"') then
-		local cursor_pos = vim.api.nvim_win_get_cursor(0)
-		local class_start_pos, class_end_pos = line:find('class%s-=%s-".-"')
-		local className_start_pos, className_end_pos = line:find('className%s-=%s-".-"')
+  for _, prefix in pairs(VALID_PREFIXES) do
+    local quotes_alternation = '([' .. table.concat(VALID_QUOTES) .. '])'
+    -- Full pattern: class%s-=%s-(["']).-%1
+    local pattern = prefix .. '%s-=%s-' .. quotes_alternation .. '.-%1'
 
-		if
-				(class_start_pos and class_end_pos and cursor_pos[2] > class_start_pos and cursor_pos[2] <= class_end_pos)
-				or (
-					className_start_pos
-					and className_end_pos
-					and cursor_pos[2] > className_start_pos
-					and cursor_pos[2] <= className_end_pos
-				)
-		then
-			return true
-		else
-			return false
-		end
-	end
+    local start_pos, end_pos = line:find(pattern)
+    local cursor_pos = vim.api.nvim_win_get_cursor(0)
+
+    if (start_pos and end_pos and cursor_pos[2] > start_pos and cursor_pos[2] <= end_pos) then
+      return true
+    end
+  end
+
+  return false
 end
 
 function M.extract_selectors(tbl)
