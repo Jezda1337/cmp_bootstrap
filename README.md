@@ -1,3 +1,5 @@
+### ⚠️ The cmp_bootstrap project has been abandoned for [nvim-html-css](https://github.com/Jezda1337/nvim-html-css)
+
 # cmp_bootstrap
 
 Bootstrap source for [hrsh7th/nvim-cmp](https://github.com/hrsh7th/nvim-cmp)
@@ -35,12 +37,3 @@ require("bootstrap-cmp.config"):setup({
 })
 
 ```
-
-# Todo
-
-- [ ] cmp documentation should contain css code for selected class.
-- [ ] default config for filetypes and for max_count is needed.
-- [x] user should have ability to chage config.
-- [ ] finish readme file.
-- [ ] detect style or src links in html file for bootstrap.
-- [x] user should put he's version of bootstrap url.
