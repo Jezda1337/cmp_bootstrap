@@ -35,30 +35,52 @@ function M.isClassOrClassNameProperty()
 	end
 end
 
-function M.extract_selectors(tbl)
-	local selectors_pattern = "%.[a-zA-Z_][%w-]*"
-	local selectors = {}
 
-	for class in tbl:gmatch(selectors_pattern) do
-		local class_name = string.sub(class, 2)
-		table.insert(selectors, class_name)
-	end
+-- CSS properties from the Bootstrap css file is minified, they look like this:
+-- display:flex!important;justify-content:center!important;align-items:center!important;
+--
+-- This function "beautify" them, into this:
+-- display: flex !important;
+-- justify-content: center !important;
+-- align-items: center !important;
+local function beautify_css_properties(p)
+  return p:gsub('[:!;]', function(match)
+    if match == '!' then
+      return ' !'
+    elseif match == ':' then
+      return ': '
+    elseif match == ';' then
+      return ';\n'
+    else
+      return '%1'
+    end
+  end)
+end
 
-	return selectors
+
+function M.extract_rules(tbl)
+  local rules_pattern = "%.([a-zA-Z_][%w-]*){(.-)}"
+  local rules = {}
+
+  for class_name, properties in tbl:gmatch(rules_pattern) do
+    table.insert(rules, { class_name = class_name, css_properties = beautify_css_properties(properties) })
+  end
+
+  return rules
 end
 
 function M.remove_duplicates(t)
-	local seen = {}
-	local result = {}
+  local seen = {}
+  local result = {}
 
-	for _, value in ipairs(t) do
-		if not seen[value] then
-			table.insert(result, value)
-			seen[value] = true
-		end
-	end
+  for _, value in ipairs(t) do
+    if not seen[value['class_name']] then
+      table.insert(result, value)
+      seen[value['class_name']] = true
+    end
+  end
 
-	return result
+  return result
 end
 
 return M
